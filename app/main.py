@@ -1,11 +1,11 @@
 from fastapi import FastAPI
 from fastapi.responses import RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
-from routers import sentiment, transform, keys, text_stats
+from routers import sentiment, transform, keys
 
 app = FastAPI(
     title="Data Processing API",
-    description="API for data transformation, sentiment analysis, text analysis, and key management",
+    description="API for data transformation, sentiment analysis, and key management",
     version="1.0.0",
     docs_url="/docs",
     redoc_url="/redoc"
@@ -22,14 +22,18 @@ app.add_middleware(
 
 # Redirect root to docs
 @app.get("/", include_in_schema=False)
-def index():
-    return RedirectResponse("/docs", status_code=308)
+async def root():
+    return RedirectResponse(url="/docs")
+
+# Health check endpoint
+@app.get("/health", include_in_schema=False)
+async def health_check():
+    return {"status": "healthy"}
 
 # Include routers
 app.include_router(sentiment.router, tags=["sentiment"])
 app.include_router(transform.router, tags=["transform"])
 app.include_router(keys.router, tags=["keys"])
-app.include_router(text_stats.router, tags=["text-analysis"])
 
 # Add OpenAPI tags metadata
 app.openapi_tags = [
@@ -44,10 +48,6 @@ app.openapi_tags = [
     {
         "name": "keys",
         "description": "Key management operations"
-    },
-    {
-        "name": "text-analysis",
-        "description": "Text analysis and statistics operations"
     }
 ]
 
