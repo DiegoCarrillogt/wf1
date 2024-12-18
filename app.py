@@ -2,12 +2,23 @@ from fastapi import FastAPI
 from fastapi.responses import RedirectResponse
 from textblob import TextBlob
 from pydantic import BaseModel
-from typing import List
+from typing import List, Dict, Any
 import uvicorn
 import json
 
+class SearchResult(BaseModel):
+    position: int
+    title: str
+    link: str
+    source: str
+    domain: str
+    displayed_link: str
+    snippet: str
+    snippet_highlighted_words: List[str]
+    favicon: str
+
 class KeyRemovalRequest(BaseModel):
-    collection: List[dict]
+    collection: List[List[Dict[str, Any]]]  # Array of arrays of dictionaries
     keysToRemove: List[str]
 
 app = FastAPI(title="Sentiment Analysis API")
@@ -38,7 +49,8 @@ def sentiment_analysis(text: str):
 
 @app.post("/removeKeys")
 def remove_keys(request: KeyRemovalRequest):
-    collection = request.collection
+    # Get the inner array (first element of the outer array)
+    collection = request.collection[0] if request.collection else []
     keys_to_remove = request.keysToRemove
     
     # Remove specified keys from each item in the collection
@@ -47,7 +59,8 @@ def remove_keys(request: KeyRemovalRequest):
             if key in item:
                 del item[key]
     
-    return collection
+    # Return the modified collection wrapped in an array to maintain format
+    return [collection]
 
 if __name__ == '__main__':
     uvicorn.run('app:app', host='0.0.0.0', port=8001)
