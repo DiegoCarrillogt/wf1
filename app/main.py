@@ -29,7 +29,27 @@ def index():
 app.include_router(sentiment.router, tags=["sentiment"])
 app.include_router(transform.router, tags=["transform"])
 app.include_router(keys.router, tags=["keys"])
-app.include_router(text_stats.router, tags=["text analysis"])
+app.include_router(text_stats.router, tags=["text-analysis"])
+
+# Add OpenAPI tags metadata
+app.openapi_tags = [
+    {
+        "name": "sentiment",
+        "description": "Sentiment analysis operations"
+    },
+    {
+        "name": "transform",
+        "description": "Data transformation operations"
+    },
+    {
+        "name": "keys",
+        "description": "Key management operations"
+    },
+    {
+        "name": "text-analysis",
+        "description": "Text analysis and statistics operations"
+    }
+]
 
 if __name__ == "__main__":
     import uvicorn
