@@ -7,9 +7,22 @@ router = APIRouter(
     tags=["keys"]
 )
 
-@router.post("/remove")
+@router.post("/remove", summary="Remove Keys", description="Remove specified keys from a collection of objects")
 def remove_keys(request: KeyRemovalRequest):
-    """Remove specified keys from a collection."""
+    """
+    Remove specified keys from each object in the collection.
+    
+    Example request:
+    ```json
+    {
+        "collection": [[
+            {"id": 1, "name": "John", "age": 30, "extra": "remove_me"},
+            {"id": 2, "name": "Jane", "age": 25, "extra": "remove_me"}
+        ]],
+        "keysToRemove": ["extra", "age"]
+    }
+    ```
+    """
     try:
         return key_service.remove_keys(request.collection, request.keysToRemove)
     except Exception as e:

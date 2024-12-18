@@ -1,11 +1,23 @@
 from fastapi import FastAPI
 from fastapi.responses import RedirectResponse
+from fastapi.middleware.cors import CORSMiddleware
 from routers import sentiment, transform, keys, text_stats
 
 app = FastAPI(
     title="Data Processing API",
-    description="API for data transformation, sentiment analysis, and text analysis",
-    version="1.0.0"
+    description="API for data transformation, sentiment analysis, text analysis, and key management",
+    version="1.0.0",
+    docs_url="/docs",
+    redoc_url="/redoc"
+)
+
+# Configure CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # Redirect root to docs
@@ -14,10 +26,10 @@ def index():
     return RedirectResponse("/docs", status_code=308)
 
 # Include routers
-app.include_router(sentiment.router)
-app.include_router(transform.router)
-app.include_router(keys.router)
-app.include_router(text_stats.router)
+app.include_router(sentiment.router, tags=["sentiment"])
+app.include_router(transform.router, tags=["transform"])
+app.include_router(keys.router, tags=["keys"])
+app.include_router(text_stats.router, tags=["text analysis"])
 
 if __name__ == "__main__":
     import uvicorn

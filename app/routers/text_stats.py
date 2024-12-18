@@ -7,7 +7,7 @@ router = APIRouter(
     tags=["text analysis"]
 )
 
-@router.post("/analyze")
+@router.post("/analyze", summary="Analyze Text Statistics", description="Analyze text and return various statistics")
 async def analyze_text(request: TextStatsRequest):
     """
     Analyze text and return various statistics including:
@@ -17,6 +17,14 @@ async def analyze_text(request: TextStatsRequest):
     - Average word length
     - Readability score
     - Word frequency (optional)
+    
+    Example request:
+    ```json
+    {
+        "text": "This is a sample text. It contains multiple sentences and some repeated words.",
+        "include_word_freq": true
+    }
+    ```
     """
     try:
         return text_stats_service.analyze_text_stats(
